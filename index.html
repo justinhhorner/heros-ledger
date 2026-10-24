@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hero's Ledger</title>
+<meta name="description" content="A 100% completion checklist for the N64 Ocarina of Time: story route with walkthroughs, Heart Pieces, Gold Skulltulas, gear, songs and side quests.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 36'%3E%3Cpath d='M20 2 28.5 17H11.5zM11 19l8.500 15h-17zM29 19l8.500 15h-17z' fill='%23c9921a'/%3E%3C/svg%3E">
+<style>
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=Spline+Sans+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: sticky ledger header (hearts, rupee-gem progress) over tabbed checklists; groups fold open like map regions. */
+:root {
+  --bg: #e7eee3;
+  --surface: #f6f9f2;
+  --surface-2: #dbe6d6;
+  --ink: #17261e;
+  --ink-soft: #4a5e52;
+  --line: #bccdb8;
+  --gold: #8f6200;
+  --gold-bright: #c9921a;
+  --gem: #1f8a52;
+  --gem-soft: #cfe8d8;
+  --blue: #2b5fa8;
+  --heart: #c0392b;
+  --font-display: "Cinzel", "Palatino Linotype", Georgia, serif;
+  --font-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Spline Sans Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1814; --surface: #15241d; --surface-2: #1c3027; --ink: #e4eede; --ink-soft: #9db3a4;
+    --line: #2b4338; --gold: #e2b34a; --gold-bright: #f0c35c; --gem: #4cc885; --gem-soft: #1d3d2e;
+    --blue: #7ea8e8; --heart: #e5574a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1814; --surface: #15241d; --surface-2: #1c3027; --ink: #e4eede; --ink-soft: #9db3a4;
+  --line: #2b4338; --gold: #e2b34a; --gold-bright: #f0c35c; --gem: #4cc885; --gem-soft: #1d3d2e;
+  --blue: #7ea8e8; --heart: #e5574a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.4;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+}
+.wrap { max-width: 880px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+
+/* header */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--surface); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 2px solid var(--gold-bright);
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 10px max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); }
+.top .wrap { display: grid; gap: 8px; }
+.brand { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.brand svg { width: 34px; height: 34px; flex: none; }
+.brand h1 { font-size: 1.45rem; letter-spacing: .04em; }
+.brand .sub { font-family: var(--font-mono); font-size: .72rem; color: var(--ink-soft); letter-spacing: .06em; text-transform: uppercase; }
+.brand .grow { flex: 1 1 140px; min-width: 0; }
+.countdown { font-family: var(--font-mono); font-size: .75rem; color: var(--gold); text-align: right; }
+.meter { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+.bar { height: 10px; background: var(--surface-2); border-radius: 99px; overflow: hidden; border: 1px solid var(--line); }
+.bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--gem), var(--gold-bright)); transition: width .25s ease; }
+.pct { font-family: var(--font-mono); font-weight: 600; font-size: .95rem; font-variant-numeric: tabular-nums; }
+.stats { display: flex; gap: 8px 18px; flex-wrap: wrap; align-items: center; font-size: .85rem; color: var(--ink-soft); }
+.stats b { color: var(--ink); font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; }
+.hearts { display: flex; gap: 1px; flex-wrap: wrap; }
+.hearts svg { width: 13px; height: 13px; fill: var(--surface-2); stroke: var(--line); stroke-width: 1.2; }
+.hearts svg.on { fill: var(--heart); stroke: var(--heart); }
+.sync { font-size: .72rem; font-family: var(--font-mono); color: var(--ink-soft); margin-left: auto; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; margin-inline: -4px; padding-inline: 4px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 8px 12px 7px; cursor: pointer; white-space: nowrap;
+  font-family: var(--font-display); font-weight: 700; font-size: .82rem; letter-spacing: .05em; color: var(--ink-soft); }
+.tab small { font-family: var(--font-mono); font-weight: 400; font-size: .68rem; margin-left: 5px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold-bright); }
+
+/* panels */
+main { padding-top: 18px; }
+.panel[hidden] { display: none; }
+.lead { color: var(--ink-soft); margin: 0 0 14px; max-width: 65ch; }
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.chip { appearance: none; background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 5px 13px; cursor: pointer; font-size: .85rem; }
+.chip[aria-pressed="true"] { background: var(--gem-soft); border-color: var(--gem); }
+.group { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 10px; }
+.group > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 11px 14px; }
+.group > summary::-webkit-details-marker { display: none; }
+.group > summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--gold); border-bottom: 2px solid var(--gold); transform: rotate(-45deg); transition: transform .15s; flex: none; }
+.group[open] > summary::before { transform: rotate(45deg); }
+.group h3 { font-size: .98rem; letter-spacing: .03em; flex: 1; min-width: 0; }
+.gcount { font-family: var(--font-mono); font-size: .75rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.group.done .gcount { color: var(--gem); font-weight: 600; }
+.gnote { margin: 0; padding: 0 14px 8px 32px; font-size: .88rem; color: var(--ink-soft); }
+.rows { padding: 0 6px 8px; }
+.row { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 8px; border-radius: 8px; cursor: pointer; position: relative; }
+.row:hover { background: var(--surface-2); }
+.row input { position: absolute; opacity: 0; width: 26px; height: 26px; margin: 0; left: 8px; top: 6px; cursor: pointer; }
+.gem { width: 22px; height: 22px; margin-top: 1px; display: block; }
+.gem svg { width: 100%; height: 100%; }
+.gem path { fill: transparent; stroke: var(--ink-soft); stroke-width: 1.8; stroke-linejoin: round; transition: fill .12s, stroke .12s; }
+.row input:checked + .gem path { fill: var(--gem); stroke: var(--gem); }
+.row input:focus-visible + .gem { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+.txt b { font-weight: 700; }
+.txt span.d { display: block; color: var(--ink-soft); font-size: .92rem; margin-top: 1px; }
+.row input:checked ~ .txt b { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--gem); text-decoration-thickness: 2px; }
+.tag { display: inline-block; font-family: var(--font-mono); font-size: .64rem; letter-spacing: .05em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; margin-left: 6px; vertical-align: 1px; color: var(--ink-soft); }
+.tag.child { color: var(--gem); border-color: var(--gem); }
+.tag.adult { color: var(--blue); border-color: var(--blue); }
+.tag.night { color: var(--gold); border-color: var(--gold); }
+.tag.heart { color: var(--heart); border-color: var(--heart); }
+.hide-done .item.is-done { display: none; }
+.how { margin: 0 8px 6px 44px; }
+.how > summary { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--blue); padding: 2px 0; list-style: none; }
+.how > summary::-webkit-details-marker { display: none; }
+.how > summary::before { content: "+"; font-weight: 600; width: 12px; }
+.how[open] > summary::before { content: "\2212"; }
+.how ol { margin: 6px 0 8px; padding: 0 0 0 20px; display: grid; gap: 6px; font-size: .94rem; max-width: 70ch; }
+.how li::marker { color: var(--gold); font-family: var(--font-mono); font-size: .8rem; }
+.how li b { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; margin-right: 5px; padding: 0 5px; border-radius: 4px; border: 1px solid var(--line); color: var(--gold); white-space: nowrap; }
+.how li b.boss { color: var(--heart); border-color: var(--heart); }
+
+/* overview */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-bottom: 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; text-align: left; cursor: pointer; display: grid; gap: 8px; }
+.card:hover { border-color: var(--gold-bright); }
+.card h3 { font-size: .95rem; letter-spacing: .04em; }
+.card .n { font-family: var(--font-mono); font-size: .78rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.next { background: var(--surface); border: 1px solid var(--gold-bright); border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; }
+.next h2 { font-size: .8rem; letter-spacing: .1em; color: var(--gold); text-transform: uppercase; margin-bottom: 4px; }
+.next p { margin: 0; }
+.notes { margin: 0 0 18px; padding: 0; list-style: none; display: grid; gap: 8px; }
+.notes li { background: var(--surface); border-left: 4px solid var(--gold-bright); border-radius: 0 8px 8px 0; padding: 8px 12px; font-size: .95rem; }
+.notes li b { font-weight: 700; }
+.foot { margin-top: 26px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .82rem; color: var(--ink-soft); display: grid; gap: 8px; }
+.foot a { color: var(--blue); }
+.danger { appearance: none; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: .85rem; justify-self: start; }
+.danger.armed { border-color: var(--heart); color: var(--heart); font-weight: 700; }
+@media (max-width: 480px) { body { font-size: 16px; } .brand h1 { font-size: 1.25rem; } .hearts svg { width: 11px; height: 11px; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+</head>
+<body>
+<div class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 40 36" aria-hidden="true"><path d="M20 2 L28.5 17 H11.5 Z" fill="var(--gold-bright)"/><path d="M11 19 L19.5 34 H2.5 Z" fill="var(--gold-bright)"/><path d="M29 19 L37.5 34 H20.5 Z" fill="var(--gold-bright)"/></svg>
+      <div class="grow"><h1>Hero's Ledger</h1><div class="sub">Ocarina of Time · N64 · 100% file</div></div>
+      <div class="countdown" id="countdown"></div>
+    </div>
+    <div class="meter"><div class="bar" role="progressbar" aria-label="Overall progress" id="overallBar" aria-valuemin="0" aria-valuemax="100"><i id="overallFill"></i></div><div class="pct" id="overallPct">0%</div></div>
+    <div class="stats">
+      <span>Hearts <b id="heartNum">3</b>/20</span>
+      <span class="hearts" id="hearts" aria-hidden="true"></span>
+      <span>Skulltulas <b id="skullNum">0</b>/100</span>
+      <span>Checked <b id="doneNum">0</b>/<b id="totalNum">0</b></span>
+      <span class="sync" id="sync">Saved on this device</span>
+    </div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+  </div>
+</div>
+<main class="wrap" id="main"></main>
+<script>
+/* Data: item = [id, title, detail, tags]. Tags: child adult night hc (boss Heart Container). */
+const SECTIONS = [];
+const G = (title, note, items) => ({ title, note, items });
+
+SECTIONS.push({
+  id: 'route', name: 'Quest Route', icon: 'route',
+  intro: 'The main story in the order that keeps backtracking low. Tap Walkthrough under any step for the how-to, including dungeon routes and boss fights. Collectibles live on the other tabs, so tick those as you walk past them.',
+  groups: [
+    G('Phase 1 · Kokiri Forest to Princess Zelda', 'Child Link. Do the easy loop of the Castle, Ranch, Kakariko and Lost Woods before Death Mountain.', [
+      ['r01', 'Get the Kokiri Sword and buy the Deku Shield', 'Sword is in the chest at the Kokiri Forest training area.', 'child'],
+      ['r02', 'Clear Inside the Deku Tree', 'Slingshot, Kokiri’s Emerald, Heart Container. Skulltula 4 needs Bombs and the Boomerang, so come back later.', 'child hc'],
+      ['r03', 'Get the Fairy Ocarina from Saria', 'Opens the Lost Woods Skull Kid hearts.', 'child'],
+      ['r04', 'Meet Princess Zelda in Hyrule Castle', 'Learn Zelda’s Lullaby and take Zelda’s Letter. Grab the Guard House Skulltula and the white dog at night while you are in the Market.', 'child'],
+      ['r05', 'Lon Lon Ranch loop', 'Epona’s Song from Malon, the Super Cucco bottle, the ranch Heart Piece.', 'child'],
+      ['r06', 'Kakariko Village loop', 'Return all 7 Cuccos for a bottle, learn the Sun’s Song in the Royal Family’s Tomb, open the Graveyard routes.', 'child']
+    ]),
+    G('Phase 2 · Dodongo’s Cavern and the child sweep', 'Buy Magic Beans early while the price is low, then plant them in every soft-soil patch.', [
+      ['r07', 'Get the Goron’s Bracelet in Goron City', 'Play Saria’s Song for Darunia.', 'child'],
+      ['r08', 'Clear Dodongo’s Cavern', 'Bomb Bag, Goron’s Ruby, Heart Container.', 'child hc'],
+      ['r09', 'Buy all 10 Magic Beans', 'The price climbs with each purchase, so buy early. Plant them in soft-soil patches as you pass.', 'child'],
+      ['r10', 'Visit the Great Fairies at Death Mountain Trail and Hyrule Castle', 'Magic Meter and Spin Attack, then Din’s Fire. Bombs open both.', 'child'],
+      ['r11', 'Finish the child minigames you can', 'Bombchu Bowling, shooting gallery, Lost Woods target practice.', 'child'],
+      ['r12', 'Run the Happy Mask Shop sequence to the Mask of Truth', 'See the Side Quests tab for the exact order.', 'child']
+    ]),
+    G('Phase 3 · Zora’s Sapphire', 'Boomerang trips pay off here: keep it equipped for every Heart Piece and Skulltula it can reach.', [
+      ['r13', 'Travel through Zora’s River to Zora’s Domain', 'Collect both pillar and waterfall Heart Pieces with Cucco or Boomerang.', 'child'],
+      ['r14', 'Win the Silver Scale in the Zora diving game', 'Dive for all five rupees.', 'child'],
+      ['r15', 'Dive for Ruto’s Letter in Lake Hylia', 'Needs the Silver Scale. The bottle empties after King Zora reads it.', 'child'],
+      ['r16', 'Get Farore’s Wind behind Jabu-Jabu’s fountain', 'Zora’s Fountain Great Fairy.', 'child'],
+      ['r17', 'Clear Inside Jabu-Jabu’s Belly', 'Boomerang, Zora’s Sapphire, Heart Container.', 'child hc'],
+      ['r18', 'Use the Boomerang on every leftover child token', 'Kakariko, Zora’s River, Lake Hylia, and the Deku Tree’s 4th Skulltula.', 'child']
+    ]),
+    G('Phase 4 · Hero of Time', 'Pulling the Master Sword starts the adult game. The Pedestal of Time lets you return to childhood any time.', [
+      ['r19', 'Get the Ocarina of Time from Zelda', 'Learn the Song of Time.', 'child'],
+      ['r20', 'Pull the Master Sword in the Temple of Time', 'Seven years pass.', 'child'],
+      ['r21', 'Learn Sheik’s first warp song and head to the Kakariko Windmill', 'Song of Storms from the Windmill Man.', 'adult'],
+      ['r22', 'Get the Hookshot from Dampé’s Grave', 'Dampé’s race comes after.', 'adult'],
+      ['r23', 'Free Epona at Lon Lon Ranch', 'Beat Ingo’s race.', 'adult'],
+      ['r24', 'Learn the Scarecrow’s Song at Lake Hylia as a child, then confirm it as an adult', 'Needed for several high Hookshot points.', 'adult']
+    ]),
+    G('Phase 5 · Forest Temple and Fire Temple', 'After Forest, flip back to childhood to knock out the Well while the Song of Storms is fresh.', [
+      ['r25', 'Clear the Forest Temple', 'Fairy Bow, Forest Medallion, Heart Container.', 'adult hc'],
+      ['r26', 'Clear the Bottom of the Well as a child', 'Play the Song of Storms to drain it. Lens of Truth. No Heart Container.', 'child'],
+      ['r27', 'Open the Market Treasure Chest Shop with the Lens of Truth', 'Night only. Pick every Small Key chest.', 'child night'],
+      ['r28', 'Plant the Crater bean as a child, then return as an adult', 'Warp with the Bolero of Fire.', 'adult'],
+      ['r29', 'Clear the Fire Temple', 'Megaton Hammer, Fire Medallion, Heart Container.', 'adult hc'],
+      ['r30', 'Get Double Magic from the Crater Great Fairy', 'Hammer opens the boulders.', 'adult']
+    ]),
+    G('Phase 6 · Ice Cavern and Water Temple', null, [
+      ['r31', 'Clear the Ice Cavern', 'Iron Boots, Serenade of Water, and a bottle of Blue Fire for King Zora.', 'adult'],
+      ['r32', 'Get the Zora Tunic', 'King Zora or the Zora shop.', 'adult'],
+      ['r33', 'Catch a 13-pound fish for the Golden Scale', 'Adult fishing at the Lake Hylia pond.', 'adult'],
+      ['r34', 'Clear the Water Temple', 'Longshot, Water Medallion, Heart Container.', 'adult hc'],
+      ['r35', 'Shoot the morning sun for the Fire Arrows', 'Lake Hylia, after the water returns.', 'adult']
+    ]),
+    G('Phase 7 · Shadow Temple', null, [
+      ['r36', 'Return to Kakariko for the village attack', 'Learn the Nocturne of Shadow.', 'adult'],
+      ['r37', 'Use Din’s Fire to open the Shadow Temple entrance', 'Needs the Lens of Truth too.', 'adult'],
+      ['r38', 'Clear the Shadow Temple', 'Hover Boots, Shadow Medallion, Heart Container.', 'adult hc'],
+      ['r39', 'Finish the Graveyard and Kakariko roof checks', 'Dampé’s one-minute race and the rooftop man.', 'adult']
+    ]),
+    G('Phase 8 · Gerudo, Spirit Temple and Biggoron', 'Do the child half of the Spirit Temple first, then the adult half.', [
+      ['r40', 'Repair the Gerudo Valley bridge', 'Starts the adult trading quest. Learn Requiem of Spirit after the desert.', 'adult'],
+      ['r41', 'Free all four carpenters in Gerudo’s Fortress', 'Earn the Gerudo Membership Card.', 'adult'],
+      ['r42', 'Score 1,000, then 1,500, at horseback archery', 'Heart Piece at 1,000 and the largest quiver at 1,500.', 'adult'],
+      ['r43', 'Cross the Haunted Wasteland to Desert Colossus', 'Follow the flags.', 'adult'],
+      ['r44', 'Clear the child half of the Spirit Temple', 'Silver Gauntlets. Plant the Colossus bean before leaving.', 'child'],
+      ['r45', 'Clear the adult half of the Spirit Temple', 'Mirror Shield, Spirit Medallion, Heart Container.', 'adult hc'],
+      ['r46', 'Finish the Biggoron Sword trade', 'See the Side Quests tab. Do the Deku Nut upgrade first on N64.', 'adult'],
+      ['r47', 'Clear Gerudo Training Ground', 'Ice Arrows. Needs Bow, Longshot, Lens, Hammer, Iron Boots and Silver Gauntlets.', 'adult']
+    ]),
+    G('Phase 9 · Ganon’s Castle', 'Check the Overview tab before you climb. Hearts should read 20 of 20 and the other tabs should be complete.', [
+      ['r48', 'Collect all six Medallions', 'Forest, Fire, Water, Shadow, Spirit and Light. Zelda hands over the Light Arrows after the sixth.', 'adult'],
+      ['r49', 'Visit the Great Fairy outside Ganon’s Castle', 'Needs the Golden Gauntlets from the Shadow trial. Doubles your defense.', 'adult'],
+      ['r50', 'Clear the six barrier trials', 'Light, Forest, Fire, Water, Shadow, Spirit.', 'adult'],
+      ['r51', 'Defeat Ganondorf', 'Light Arrows, then the Master Sword.', 'adult'],
+      ['r52', 'Escape the collapsing castle and defeat Ganon', 'The credits roll after Ganon falls.', 'adult']
+    ])
+  ]
+});
+
+SECTIONS.push({
+  id: 'hearts', name: 'Heart Pieces', icon: 'heart',
+  intro: 'There are 36 Heart Pieces. Every four make a container, so they add nine hearts. With the three you start with and the eight dungeon containers, that is 20 hearts. Listed in roughly the order you can collect them.',
+  groups: [
+    G('Before the Master Sword (child)', null, [
+      ['h01', 'Graveyard · ReDead tomb', 'Pull the second-from-right gravestone, freeze the ReDead with the Sun’s Song, then play it again on the steps.', 'child'],
+      ['h02', 'Graveyard · Dampé’s Gravedigging Tour', 'Evenings only, 18:00 to 21:00. 10 rupees per dig and it is random.', 'child night'],
+      ['h03', 'Lon Lon Ranch · storage shed', 'Pull the crates, crawl through the corner hole.', 'child'],
+      ['h04', 'Gerudo Valley · waterfall alcove', 'Carry a Cucco across, or swim over from the ladder.', ''],
+      ['h05', 'Gerudo Valley · crate ledge', 'Cucco as a child, Longshot as an adult. Roll into the crate.', ''],
+      ['h06', 'Lake Hylia · 10-pound fish', 'Show it to the Fishing Hole man.', 'child'],
+      ['h07', 'Lost Woods · Skull Kid memory game', 'Right one screen, drop down, stand on the stump. Win three songs in a row.', 'child'],
+      ['h08', 'Lost Woods · Saria’s Song Skull Kid', 'Left one screen. Play Saria’s Song on the stump.', 'child'],
+      ['h09', 'Market Back Alley · white dog', 'Night only. Bring the white dog to the open house.', 'child night'],
+      ['h10', 'Goron City · spinning urn', 'Light every torch, then explode a Bomb on the smiling face.', 'child'],
+      ['h11', 'Death Mountain Crater · wall alcove', 'Climb down the entrance wall quickly, or ride a bean later.', ''],
+      ['h12', 'Kakariko · Impa’s cow cage', 'Throw a Cucco up the construction site and glide over.', 'child'],
+      ['h13', 'Market · Bombchu Bowling', 'Prizes cycle: Bombchu, Heart Piece, Bombs, Bomb Bag, purple rupee.', 'child'],
+      ['h14', 'Hyrule Field · fenced square', 'Southwest near Lake Hylia. Bomb the center, buy from the Scrub for 10 rupees.', ''],
+      ['h15', 'Zora’s River · central pillar', 'Boomerang as a child.', 'child'],
+      ['h16', 'Zora’s River · waterfall platform', 'Boomerang as a child.', 'child'],
+      ['h17', 'Zora’s Domain · five torches', 'Light them all in one run with Deku Sticks.', 'child'],
+      ['h18', 'Graveyard · bean platform', 'Plant a bean as a child, ride it as an adult, and break the crate.', 'adult']
+    ]),
+    G('After the Master Sword (mostly adult)', null, [
+      ['h19', 'Kakariko Windmill · interior ledge', 'Boomerang as a child, or hop the platforms after Dampé’s first race.', ''],
+      ['h20', 'Dampé’s Crypt · one-minute race', 'Needs the Hookshot.', 'adult'],
+      ['h21', 'Kakariko · rooftop man', 'Hookshot onto Granny’s Potion Shop roof.', 'adult'],
+      ['h22', 'House of Skulltula · 50 tokens', 'Claim it in Kakariko.', ''],
+      ['h23', 'Lake Hylia · laboratory roof', 'Bean or Scarecrow’s Song.', 'adult'],
+      ['h24', 'Lakeside Laboratory · pool bottom', 'Needs the Golden Scale.', 'adult'],
+      ['h25', 'Hyrule Field · water grotto', 'Northwest of Lon Lon Ranch. Bomb the tree, dive with Iron Boots or the Golden Scale.', 'adult'],
+      ['h26', 'Death Mountain Trail · bean ledge', 'Ride the bean from the Dodongo’s Cavern entrance.', 'adult'],
+      ['h27', 'Death Mountain Crater · peak', 'Plant the bean beside the Triforce pedestal and ride it up.', 'adult'],
+      ['h28', 'Zora’s Fountain · iceberg', 'Hop across the icebergs.', 'adult'],
+      ['h29', 'Ice Cavern · red ice', 'Melt it with Blue Fire in the Compass room.', 'adult'],
+      ['h30', 'Zora’s Fountain · fountain floor', 'Iron Boots.', 'adult'],
+      ['h31', 'Zora’s River · Song of Storms frogs', 'Stand on the log and play the Song of Storms.', 'child'],
+      ['h32', 'Zora’s River · five-frog Simon Says', 'Grow all five frogs with five songs first.', 'child'],
+      ['h33', 'Market · Treasure Chest Shop', 'Night only, Lens of Truth, pick all Small Key chests.', 'child night'],
+      ['h34', 'Gerudo’s Fortress · top chest', 'Scarecrow’s Song and Hookshot, or the Longshot.', 'adult'],
+      ['h35', 'Horseback Archery Range · 1,000 points', 'Gerudo card and Epona.', 'adult'],
+      ['h36', 'Desert Colossus · bean arch', 'Ride the bean from the temple entrance over the stone arch.', 'adult']
+    ])
+  ]
+});
+
+SECTIONS.push({
+  id: 'songs', name: 'Songs', icon: 'note',
+  intro: 'Twelve fixed songs plus the Scarecrow’s Song you compose yourself. Pick an easy eight-note pattern and confirm it with adult Bonooru.',
+  groups: [
+    G('Learned as a child', null, [
+      ['s01', 'Zelda’s Lullaby', 'Impa, Hyrule Castle.', 'child'],
+      ['s02', 'Epona’s Song', 'Malon, Lon Lon Ranch.', 'child'],
+      ['s03', 'Saria’s Song', 'Saria, Sacred Forest Meadow.', 'child'],
+      ['s04', 'Sun’s Song', 'Royal Family’s Tomb.', 'child'],
+      ['s05', 'Song of Time', 'Zelda, as you leave the castle.', 'child'],
+      ['s06', 'Song of Storms', 'Windmill Man. Taught as an adult, usable as a child.', 'adult']
+    ]),
+    G('Sheik’s warp songs (adult)', null, [
+      ['s07', 'Minuet of Forest', 'Warps to Sacred Forest Meadow.', 'adult'],
+      ['s08', 'Bolero of Fire', 'Warps to Death Mountain Crater.', 'adult'],
+      ['s09', 'Serenade of Water', 'Warps to Lake Hylia.', 'adult'],
+      ['s10', 'Requiem of Spirit', 'Warps to Desert Colossus.', 'adult'],
+      ['s11', 'Nocturne of Shadow', 'Warps to the Graveyard temple entrance.', 'adult'],
+      ['s12', 'Prelude of Light', 'Warps to the Temple of Time.', 'adult']
+    ]),
+    G('Your own song', null, [
+      ['s13', 'Scarecrow’s Song', 'Teach Bonooru an eight-note song at Lake Hylia, then play it to adult Bonooru again.', 'child adult']
+    ])
+  ]
+});
+/* Gold Skulltulas: 100 total, 56 overworld and 44 in dungeons (N64 layouts). Tags: child adult night. */
+(function () {
+  let n = 0;
+  const S = (t, d, tags) => [`g${String(++n).padStart(3, '0')}`, t, d, tags || ''];
+  SECTIONS.push({
+    id: 'skulls', name: 'Gold Skulltulas', icon: 'spider',
+    intro: 'Night tokens only appear after dark (play the Sun’s Song to skip ahead). Dungeon and grotto tokens ignore the clock. Rewards at the House of Skulltula in Kakariko: 10 Adult’s Wallet, 20 Stone of Agony, 30 Giant’s Wallet, 40 Bombchus, 50 Heart Piece, 100 Rupees.',
+    groups: [
+      G('Kokiri Forest · 3', null, [
+        S('Know-It-All Brothers’ house', 'Back wall of the house.', 'child night'),
+        S('Soil beside the Kokiri Shop', 'Empty bugs onto the soft soil.', 'child'),
+        S('House of Twins', 'High on the rear wall. Hookshot it.', 'adult night')]),
+      G('Inside the Deku Tree · 4', 'The fourth needs Bombs and the Boomerang. Plan a return trip.', [
+        S('Compass room', 'Side alcove off the raised platforms.', 'child'),
+        S('Basement vines', 'Shoot it off the vines, then climb.', 'child'),
+        S('Basement grating', 'Beside the water in the main basement.', 'child'),
+        S('Bomb wall, back room', 'Bomb the cracked wall, Boomerang the token.', 'child')]),
+      G('Lost Woods · 3', null, [
+        S('Soil near the bridge', 'Bugs into the clearing above the Hyrule Field bridge.', 'child'),
+        S('Forest Stage soil', 'Bugs into the patch by the two Scrubs. Plant a bean here for the next one.', 'child'),
+        S('Forest Stage upper ledge', 'Ride the bean plant from the soil above.', 'adult night')]),
+      G('Sacred Forest Meadow · 1', null, [
+        S('Wall above the maze', 'Hookshot from the final staircase.', 'adult night')]),
+      G('Hyrule Field · 2', null, [
+        S('Grotto near Kakariko', 'Bomb the entrance by the northeastern tree.', ''),
+        S('Cow grotto near Gerudo Valley', 'Hammer the boulder, bomb in, burn the webs with Din’s Fire.', 'adult')]),
+      G('Market and Castle grounds · 4', null, [
+        S('Market guard house', 'Roll into the crate at the back.', 'child'),
+        S('Castle grounds tree', 'Roll into the tree near the entrance.', 'child'),
+        S('Moat grotto', 'Song of Storms beside the tree, then bomb the walls.', 'child'),
+        S('Outside Ganon’s Castle', 'Ruined arch. Hookshot the token.', 'adult')]),
+      G('Lon Lon Ranch · 4', null, [
+        S('Entrance tree', 'Roll into the lone tree.', 'child'),
+        S('Corral shelter', 'Back of the rain shelter.', 'child night'),
+        S('House window', 'High on the house. Boomerang.', 'child night'),
+        S('Outer wall', 'Behind the horse corral, near the crate tower. Boomerang.', 'child night')]),
+      G('Kakariko Village · 6', null, [
+        S('Entrance tree', 'Roll into it.', 'child night'),
+        S('House of Skulltula', 'Outside wall.', 'child night'),
+        S('Construction site', 'Exposed brickwork.', 'child night'),
+        S('Watchtower ladder', 'Shoot it, then climb.', 'child night'),
+        S('Death Mountain gate house', 'Outside wall.', 'child night'),
+        S('Cliff above Impa’s house', 'Hookshot from the roof.', 'adult night')]),
+      G('Kakariko Graveyard · 2', null, [
+        S('Soil patch', 'Bugs on the side wall soil.', 'child'),
+        S('Upper right wall', 'Boomerang.', 'child night')]),
+      G('Death Mountain Trail · 4', null, [
+        S('Cracked-wall alcove', 'Bomb it, climb in.', ''),
+        S('Soil outside Dodongo’s Cavern', 'Release bugs.', 'child'),
+        S('Above Dodongo’s Cavern', 'Hammer the red boulder.', 'adult night'),
+        S('Falling-rock route', 'Hammer the red boulder on the upper trail.', 'adult night')]),
+      G('Dodongo’s Cavern · 5', null, [
+        S('Baby Dodongo side room', 'Explode the weak side wall.', ''),
+        S('Staircase vines', 'Shoot it, then climb.', ''),
+        S('Alcove above the staircase', 'Cross the top while it is raised.', 'adult'),
+        S('Upper corridor', 'Scarecrow’s Song, Hookshot, follow the upper path.', 'adult'),
+        S('Final side room', 'Defeat the Armos guarding the wall token.', '')]),
+      G('Goron City · 2', null, [
+        S('Upper boulder maze', 'Roll into the crate at the back.', 'child'),
+        S('Hanging central platform', 'Hookshot the back of the platform.', 'adult')]),
+      G('Death Mountain Crater · 2', null, [
+        S('Entrance crate', 'Roll into the crate before the heat timer ends.', 'child'),
+        S('Warp-point soil', 'Bugs into the soil, then leave. No Goron Tunic for a child.', 'child')]),
+      G('Fire Temple · 5', null, [
+        S('Song of Time side room', 'Move the blue block in the lava chamber.', ''),
+        S('Lower boulder maze', 'Bomb the hollow-sounding wall.', ''),
+        S('Scarecrow tower climb', 'Summon the scarecrow, Hookshot up.', 'adult'),
+        S('Scarecrow tower top', 'Top room, high wall.', 'adult'),
+        S('Hammer route to the Boss Key', 'Smash the statue, flying-tile room with a Like Like.', 'adult')]),
+      G('Zora’s River · 4', null, [
+        S('Lower river tree', 'Roll into it.', 'child'),
+        S('Waterfall-area ladder', 'Shoot it, then climb.', 'child night'),
+        S('Raised grotto wall', 'Hookshot or Longshot, mid-river.', 'adult night'),
+        S('Upper bridge wall', 'Longshot the canyon wall.', 'adult night')]),
+      G('Zora’s Domain · 1', null, [
+        S('Frozen waterfall', 'Diving-game platform wall. Hookshot.', 'adult night')]),
+      G('Zora’s Fountain · 3', null, [
+        S('Southeastern tree', 'Roll into it.', 'child'),
+        S('Wall above the log', 'Boomerang.', 'child night'),
+        S('Silver Gauntlets passage', 'Lift the silver boulder, bomb the rock, Lens of Truth, climb the far ladder.', 'adult night')]),
+      G('Inside Jabu-Jabu’s Belly · 4', null, [
+        S('Water-switch room', 'Climbable wall.', 'child'),
+        S('Basement lower wall', 'Boomerang.', 'child'),
+        S('Basement upper wall', 'Second token, higher wall.', 'child'),
+        S('Room before Barinade', 'Vines by the protected switch.', 'child')]),
+      G('Forest Temple · 5', null, [
+        S('Entrance courtyard', 'Vines on the right wall.', 'adult'),
+        S('Main lobby', 'High wall by the opposite doorway.', 'adult'),
+        S('Raised-island courtyard', 'Hookshot from a nearby ledge.', 'adult'),
+        S('Level-island courtyard', 'Hookshot across the gap.', 'adult'),
+        S('Rotating basement', 'Rotate the room to expose the alcove.', 'adult')]),
+      G('Lake Hylia · 5', null, [
+        S('Laboratory soil', 'Bugs beside the lab.', 'child'),
+        S('Laboratory exterior', 'Rear wall. Boomerang.', 'child night'),
+        S('Small island pillar', 'Swim out, check behind a pillar.', 'child night'),
+        S('Laboratory crate', 'Iron Boots to the pool floor, roll into the crate, Hookshot.', 'adult'),
+        S('Dead tree', 'Longshot to the top of the tree trunk.', 'adult night')]),
+      G('Water Temple · 5', null, [
+        S('Behind the lower gate', 'Bomb the floor, spin-attack the crystal through the bars.', 'adult'),
+        S('Central tower', 'High inside wall. Longshot at a raised water level.', 'adult'),
+        S('Falling-platform room', 'Longshot from the room by the waterfall.', 'adult'),
+        S('Underground river', 'Iron Boots near the whirlpools, Longshot the wall.', 'adult'),
+        S('Boulder-and-waterfall passage', 'On the way to the Boss Key.', 'adult')]),
+      G('Ice Cavern · 3', null, [
+        S('Spinning-blade room', 'High wall. Hookshot.', 'adult'),
+        S('Compass room', 'Melt the red ice with Blue Fire.', 'adult'),
+        S('Ice-block room', 'Upper wall. Hookshot before leaving.', 'adult')]),
+      G('Bottom of the Well · 3', 'Child Link. Boomerang, Small Keys and the Lens of Truth.', [
+        S('Western inner room', 'Locked room west of the center.', 'child'),
+        S('Eastern inner room', 'Locked room east of the center.', 'child'),
+        S('Like Like room', 'Pit-filled eastern route. Beat the Like Like.', 'child')]),
+      G('Shadow Temple · 5', null, [
+        S('Like Like side room', 'Through the spinning-blade area.', 'adult'),
+        S('Falling-spike room', 'Push the hidden block under the spikes.', 'adult'),
+        S('Single skull-pot room', 'Behind the rotating pot.', 'adult'),
+        S('Near the ship', 'Scarecrow’s Song and Longshot to the side platform.', 'adult'),
+        S('Three skull-pot room', 'After the boat, behind the pots.', 'adult')]),
+      G('Gerudo Valley · 4', null, [
+        S('Small bridge wall', 'Boomerang, before the canyon bridge.', 'child night'),
+        S('Lower canyon soil', 'Cucco to the lower ledge, then bugs into the soil.', 'child'),
+        S('Carpenters’ tent', 'Back of the tent. Hookshot.', 'adult night'),
+        S('Stone arch', 'Underside of the arch. Hookshot or Longshot.', 'adult night')]),
+      G('Gerudo’s Fortress · 2', 'Free the four carpenters first to stop guard interruptions.', [
+        S('Fortress exterior', 'High outer wall above the prison.', 'adult night'),
+        S('Archery range', 'High target pole at the far end. Longshot.', 'adult night')]),
+      G('Haunted Wasteland · 1', null, [
+        S('Stone shelter', 'Climb down inside, Hookshot the wall.', 'adult')]),
+      G('Desert Colossus · 3', null, [
+        S('Temple soil', 'Bugs into the patch. Plant a bean here.', 'child'),
+        S('Oasis palm tree', 'Longshot.', 'adult night'),
+        S('Elevated rock', 'Ride the bean plant and jump to the rock.', 'adult night')]),
+      G('Spirit Temple · 5', null, [
+        S('Metal fence', 'Child route. Boomerang from the fence.', 'child'),
+        S('Sun-switch room', 'Climb the wall and turn around.', 'child'),
+        S('Stairs after the sun block', 'Above the doorway. Boomerang.', 'child'),
+        S('Central statue chamber', 'Scarecrow’s Song and Hookshot.', 'adult'),
+        S('Boulder room', 'Song of Time on the blue blocks.', 'adult')])
+    ]
+  });
+})();
+SECTIONS.push({
+  id: 'gear', name: 'Gear & Upgrades', icon: 'sword',
+  intro: 'Every permanent item, capacity upgrade, spell and piece of equipment. Ammo counts and rupees are not part of 100%.',
+  groups: [
+    G('Weapons and tools', null, [
+      ['e01', 'Fairy Slingshot', 'Deku Tree.', 'child'], ['e02', 'Bombs and Bomb Bag', 'Dodongo’s Cavern.', 'child'],
+      ['e03', 'Boomerang', 'Jabu-Jabu’s Belly.', 'child'], ['e04', 'Bombchus', 'Bombchu Bowling or the 40-token reward.', 'child'],
+      ['e05', 'Hookshot, then Longshot', 'Dampé’s Grave, then the Water Temple.', 'adult'], ['e06', 'Fairy Bow', 'Forest Temple.', 'adult'],
+      ['e07', 'Lens of Truth', 'Bottom of the Well.', 'child'], ['e08', 'Megaton Hammer', 'Fire Temple.', 'adult'],
+      ['e09', 'Fire Arrows', 'Lake Hylia sunrise.', 'adult'], ['e10', 'Ice Arrows', 'Gerudo Training Ground.', 'adult'],
+      ['e11', 'Light Arrows', 'Princess Zelda after the six Medallions.', 'adult']
+    ]),
+    G('Swords, shields, tunics, boots', null, [
+      ['e12', 'Kokiri Sword', 'Kokiri Forest.', 'child'], ['e13', 'Master Sword', 'Temple of Time.', 'adult'], ['e14', 'Biggoron Sword', 'End of the adult trade sequence.', 'adult'],
+      ['e15', 'Deku Shield', 'Shop or Deku Tree.', 'child'], ['e16', 'Hylian Shield', 'Shop or Gerudo Fortress.', ''], ['e17', 'Mirror Shield', 'Spirit Temple.', 'adult'],
+      ['e18', 'Kokiri Tunic', 'Starting tunic.', 'child'], ['e19', 'Goron Tunic', 'Goron City shop or Darunia.', ''], ['e20', 'Zora Tunic', 'Zora’s Domain shop or King Zora.', 'adult'],
+      ['e21', 'Kokiri Boots', 'Starting boots.', 'child'], ['e22', 'Iron Boots', 'Ice Cavern.', 'adult'], ['e23', 'Hover Boots', 'Shadow Temple.', 'adult']
+    ]),
+    G('Strength and swimming', null, [
+      ['e24', 'Goron’s Bracelet', 'Goron City.', 'child'], ['e25', 'Silver Gauntlets', 'Spirit Temple.', 'child'], ['e26', 'Golden Gauntlets', 'Ganon’s Castle trials. Opens the final Great Fairy.', 'adult'],
+      ['e27', 'Silver Scale', 'Zora diving game.', 'child'], ['e28', 'Golden Scale', 'A 13-pound fish at the adult pond.', 'adult']
+    ]),
+    G('Capacity upgrades', null, [
+      ['e29', 'Adult’s Wallet (200)', '10 Skulltula tokens.', ''], ['e30', 'Giant’s Wallet (500)', '30 Skulltula tokens.', ''],
+      ['e31', 'Bomb Bag to 40', 'Bombchu Bowling and the Hot Rodder Goron.', ''], ['e32', 'Bullet Bag to 50', 'Lost Woods target practice and the Market shooting gallery.', 'child'],
+      ['e33', 'Quiver to 50', 'Kakariko shooting gallery as an adult, then 1,500 horseback points.', 'adult'],
+      ['e34', 'Deku Stick capacity to 30', 'Skull Mask at the Lost Woods Forest Stage, or a Business Scrub.', 'child'],
+      ['e35', 'Deku Nut capacity to 40', 'Mask of Truth at the Forest Stage. Do this before the Poacher’s Saw trade on N64.', 'child']
+    ]),
+    G('Magic, defense and Stone of Agony', null, [
+      ['e36', 'Magic Meter and Spin Attack', 'Death Mountain Trail Great Fairy.', 'child'], ['e37', 'Double Magic', 'Death Mountain Crater Great Fairy.', 'adult'],
+      ['e38', 'Din’s Fire', 'Hyrule Castle Great Fairy.', 'child'], ['e39', 'Farore’s Wind', 'Zora’s Fountain Great Fairy.', 'child'],
+      ['e40', 'Nayru’s Love', 'Desert Colossus Great Fairy.', 'adult'], ['e41', 'Double Defense', 'Great Fairy outside Ganon’s Castle.', 'adult'],
+      ['e42', 'Stone of Agony', '20 Skulltula tokens. Shakes a Rumble Pak near hidden grottos.', '']
+    ]),
+    G('Quest stones and Medallions', null, [
+      ['e43', 'Kokiri’s Emerald', 'Deku Tree.', 'child'], ['e44', 'Goron’s Ruby', 'Dodongo’s Cavern.', 'child'], ['e45', 'Zora’s Sapphire', 'Jabu-Jabu’s Belly.', 'child'],
+      ['e46', 'Forest Medallion', 'Forest Temple.', 'adult'], ['e47', 'Fire Medallion', 'Fire Temple.', 'adult'], ['e48', 'Water Medallion', 'Water Temple.', 'adult'],
+      ['e49', 'Shadow Medallion', 'Shadow Temple.', 'adult'], ['e50', 'Spirit Medallion', 'Spirit Temple.', 'adult'], ['e51', 'Light Medallion', 'Rauru, in the Temple of Time after Sheik’s reveal, once the Shadow and Spirit temples are done.', 'adult']
+    ])
+  ]
+});
+
+SECTIONS.push({
+  id: 'side', name: 'Side Quests', icon: 'mask',
+  intro: 'Bottles, trades, Great Fairies, beans and the named minigames. The adult trade has real timers, so set aside a clean run for it.',
+  groups: [
+    G('Four bottles', null, [
+      ['q01', 'Ruto’s Letter bottle', 'Dive at Lake Hylia with the Silver Scale. Show the letter to King Zora to empty it.', 'child'],
+      ['q02', 'Kakariko Cucco bottle', 'Return all seven Cuccos to Anju.', 'child'],
+      ['q03', 'Lon Lon Ranch Super Cucco bottle', 'Pick Talon’s three special Cuccos in the child game.', 'child'],
+      ['q04', 'Big Poe bottle', 'Sell all 10 Big Poes to the Poe Collector for 100 points. Shoot them from Epona in Hyrule Field.', 'adult']
+    ]),
+    G('Great Fairy Fountains', 'Each one needs Zelda’s Lullaby on the Triforce mark.', [
+      ['q05', 'Death Mountain Trail', 'Bomb the wall at the summit.', 'child'], ['q06', 'Hyrule Castle', 'Bomb the boulder and crawl through the passage.', 'child'],
+      ['q07', 'Zora’s Fountain', 'Behind Jabu-Jabu’s fountain.', 'child'], ['q08', 'Death Mountain Crater', 'Hammer the boulders.', 'adult'],
+      ['q09', 'Desert Colossus', 'Lay a Bomb against the cracked wall to open it.', 'adult'], ['q10', 'Ganon’s Castle', 'Golden Gauntlets slab outside the castle.', 'adult']
+    ]),
+    G('Happy Mask Shop (child)', 'Each mask is borrowed, sold, then paid for. The Mask of Truth is the prize.', [
+      ['q11', 'Keaton Mask', 'Borrow with Zelda’s Letter, show the Kakariko guard.', 'child'],
+      ['q12', 'Skull Mask', 'Show the Skull Kid in the Lost Woods. Reward is the Deku Stick upgrade.', 'child'],
+      ['q13', 'Spooky Mask', 'Show the Graveyard boy.', 'child'],
+      ['q14', 'Bunny Hood', 'Needs Zora’s Sapphire. Show the running man in Hyrule Field.', 'child'],
+      ['q15', 'Mask of Truth', 'Sold all four. Use it at the Forest Stage and Gossip Stones.', 'child']
+    ]),
+    G('Biggoron Sword trade (adult)', 'Do the Deku Nut upgrade first on N64. Warping does not stop the timers; ride Epona.', [
+      ['q16', 'Pocket Egg to Pocket Cucco', 'Hatch the egg. Sun’s Song twice speeds it up.', 'adult'],
+      ['q17', 'Pocket Cucco to Cojiro', 'Wake Talon, then return the Cucco to the Cucco Lady.', 'adult'],
+      ['q18', 'Cojiro to Odd Mushroom', 'The blue man in the Lost Woods. Timed.', 'adult'],
+      ['q19', 'Odd Mushroom to Odd Potion', 'Granny’s Potion Shop. Timed.', 'adult'],
+      ['q20', 'Odd Potion to Poacher’s Saw', 'Fado in the Lost Woods.', 'adult'],
+      ['q21', 'Poacher’s Saw to Broken Goron’s Sword', 'Master carpenter, Gerudo Valley.', 'adult'],
+      ['q22', 'Broken Goron’s Sword to Prescription', 'Biggoron, Death Mountain summit.', 'adult'],
+      ['q23', 'Prescription to Eyeball Frog', 'King Zora, after Blue Fire.', 'adult'],
+      ['q24', 'Eyeball Frog to World’s Finest Eye Drops', 'Lakeside Laboratory. Timed.', 'adult'],
+      ['q25', 'Eye Drops to Claim Check', 'Biggoron. Timed.', 'adult'],
+      ['q26', 'Claim Check to Biggoron Sword', 'Return three in-game days later.', 'adult']
+    ]),
+    G('Magic Bean plants', 'Plant as a child. Ride as an adult for tokens and Heart Pieces.', [
+      ['q27', 'Lost Woods Forest Stage', 'Upper ledge Skulltula.', 'child'], ['q28', 'Graveyard', 'Crate Heart Piece.', 'child'],
+      ['q29', 'Death Mountain Trail', 'Ledge above Dodongo’s Cavern.', 'child'], ['q30', 'Death Mountain Crater', 'Peak Heart Piece. Warp in with the Bolero of Fire.', 'child'],
+      ['q31', 'Lake Hylia laboratory', 'Roof Heart Piece. The Scarecrow’s Song works instead.', 'child'], ['q32', 'Desert Colossus', 'Arch Heart Piece and rock Skulltula.', 'child']
+    ]),
+    G('Named minigames and quests', null, [
+      ['q33', 'Win Epona', 'Epona’s Song, then beat Ingo as an adult.', 'adult'],
+      ['q34', 'Gerudo Membership Card', 'Free all four carpenters.', 'adult'],
+      ['q35', 'Child fishing: 10-pound fish', 'Heart Piece.', 'child'],
+      ['q36', 'Adult fishing: 13-pound fish', 'Golden Scale.', 'adult'],
+      ['q37', 'Dampé’s one-minute race', 'Heart Piece.', 'adult'],
+      ['q38', 'House of Skulltula finale', 'Free the last family member after token 100.', '']    ])
+  ]
+});
+/* Walkthrough steps per route id. Prefixes Boss:/Tip:/Watch out:/Reward: render as bold labels. */
+const WALK = {};
+
+WALK.r01 = [
+  'Head to the Forest Training Center area and crawl through the small opening to reach the chest holding the Kokiri Sword.',
+  'Cut grass and break pots around the village for rupees. The Kokiri Shop sells the Deku Shield for 40.',
+  'Equip both from the menu. Mido will not let you into the Deku Tree until you carry a sword and shield.'
+];
+WALK.r02 = [
+  'Climb the vines on the ground floor to the upper level and open the large chest for the Dungeon Map.',
+  'In the first Scrub room, hold your shield up (R) and bounce its shots back, then chase it down and talk to it. Your sword does nothing to it.',
+  'Past the next door, open the chest for the Fairy Slingshot. Shoot the ladder above the entrance so it drops and lets you leave.',
+  'Back in the main room, shoot the Skullwalltulas off the vines, climb up, and step on the floor switch in the east room. A platform rises to the chest with the Compass.',
+  'Light a Deku Stick at a torch and light the other torches to open the exit. Beat the big Skulltula by hitting its back when it lowers.',
+  'Burn the web in the center of the main floor with a lit stick and drop to the first basement. Burn the south web, shoot the eye above the shut door, and dive under the water (hold A) to hit the west switch and drain it.',
+  'Push the block and climb it, light both torches in the torch room, then burn the webs on the way to the Scrub fight. Beat the three Scrubs in this order: center, right, left.',
+  'Boss: Queen Gohma. When her eyes glow red she attacks, so back-dodge her slam. Shoot her eye with the Slingshot (a Deku Nut works too) to stun her, then slash. Destroy the eggs she drops before they hatch.',
+  'Reward: Heart Container, Kokiri’s Emerald. This dungeon’s fourth Skulltula needs Bombs and the Boomerang, so return later.'
+];
+WALK.r03 = [
+  'After the Deku Tree cutscene, Saria meets you at the bridge that leads out of the forest and gives you the Fairy Ocarina.',
+  'Tip: The Lost Woods Skull Kid Heart Pieces unlock now (memory game) and again once you have Saria’s Song. Details are on the Heart Pieces tab.'
+];
+WALK.r04 = [
+  'Cross Hyrule Field to the Market and go up to Hyrule Castle.',
+  'Sneak past the guards. They spot you when you enter their line of sight, so wait behind corners and time your moves.',
+  'Reach the courtyard and talk to Zelda. She gives you Zelda’s Letter, and Impa teaches you Zelda’s Lullaby.',
+  'Tip: While you are in the Market, grab the Guard House Skulltula (roll into the crate) and return the white dog at night for a Heart Piece.'
+];
+WALK.r05 = [
+  'Lon Lon Ranch is south of the castle. Show Malon your Ocarina and she teaches you Epona’s Song.',
+  'Talk to Talon in the house to try his Super Cucco game. The prize is an empty bottle filled with milk.',
+  'The ranch Heart Piece is in the storage shed: pull the crates to the far corner and crawl through the hole.',
+  'Tip: Come back at night with the Boomerang for the ranch Skulltulas.'
+];
+WALK.r06 = [
+  'Kakariko is northeast of the castle. Gather the seven Cuccos around the village and return them to Anju by the pen. She rewards you with a bottle.',
+  'In the Graveyard, play Zelda’s Lullaby on the Triforce mark in front of the big tomb, then follow the passage inside to learn the Sun’s Song.',
+  'Tip: The Sun’s Song changes day and night, which you will use constantly for night-only Skulltulas.'
+];
+WALK.r07 = [
+  'Show Zelda’s Letter to the guard at the Death Mountain gate in Kakariko. He steps aside.',
+  'Climb the trail, dodging Red Tektites, and take the right path near the flag into Goron City.',
+  'Drop to the lowest level, stand at the doorway beside the Goron, and play Zelda’s Lullaby. Inside, play Saria’s Song for Darunia.',
+  'Reward: Goron’s Bracelet. It lets you pick up Bomb Flowers.'
+];
+WALK.r08 = [
+  'Back on the trail, grab the Bomb Flower beside the seated Goron and toss it over the edge to blow open the cavern entrance.',
+  'Bomb the odd-looking wall straight ahead to enter. Wear the Hylian Shield, since the Deku Shield burns.',
+  'In the main room, avoid the Beamos for now. Cross to the left, bomb the wall behind the ladder for the Dungeon Map chest.',
+  'Fight the Baby Dodongos in the corridor and pull an Armos statue onto the floor switch to hold the barred door open.',
+  'Beat both Lizalfos in the lower room (block, then strike when they pause). Shoot the diamond-shaped eyes to put out the flames and open the Bomb Bag room.',
+  'Open the chest on the raised right platform for the Bomb Bag.',
+  'Drop a Bomb Flower into the gap in the Armos room to lower a staircase to the second floor. Push the statue by the ladder, climb, and hit the switch.',
+  'Cross the bridge and drop bombs through its gaps into the statue’s eye sockets to open the mouth. Jump inside, follow the east corridor, push the rock into the hole, and bomb the discolored floor tile in the next room to reach the boss.',
+  'Boss: King Dodongo. When he opens his mouth to breathe fire, throw a Bomb in. Hit him once or twice while he is stunned, then back off and block the roll. Repeat.',
+  'Reward: Heart Container, Goron’s Ruby.'
+];
+WALK.r09 = [
+  'The Bean Seller sits beside Zora’s River. Each bean costs 10 rupees more than the last, so buy the full set while the price is low.',
+  'Plant a bean in every soft-soil patch you pass. Standing on the patch and choosing to plant a bean is enough.',
+  'Tip: The Side Quests tab lists the six patches that matter for Heart Pieces and Skulltulas.'
+];
+WALK.r10 = [
+  'Death Mountain Trail: climb to the summit, bomb the cracked wall, and play Zelda’s Lullaby on the Triforce mark. Reward: Magic Meter and Spin Attack.',
+  'Hyrule Castle: bomb the boulder and crawl through the passage. Reward: Din’s Fire, which you need later for the Shadow Temple.'
+];
+WALK.r11 = [
+  'Bombchu Bowling (Market, daytime, after Dodongo’s Cavern): win the Heart Piece and Bomb Bag when they come around in the prize rotation.',
+  'Shooting gallery in the Market and Lost Woods target practice raise your seed capacity.',
+  'Tip: Rewards for each are listed on the Gear tab.'
+];
+WALK.r12 = [
+  'Show Zelda’s Letter to the Happy Mask Shop owner in the Market and borrow the Keaton Mask.',
+  'Keaton Mask: wear it for the Kakariko guard, then return to the shop and pay for it.',
+  'Skull Mask: show it to the Skull Kid in the Lost Woods (the Deku Stick upgrade is the reward).',
+  'Spooky Mask: show it to the boy in the Graveyard.',
+  'Bunny Hood: needs Zora’s Sapphire first. Show it to the running man in Hyrule Field.',
+  'Return after each sale to pay and borrow the next mask. Reward after the fourth: the Mask of Truth.'
+];
+WALK.r13 = [
+  'Go through Zora’s River. Play Zelda’s Lullaby at the waterfall at the far end to open Zora’s Domain.',
+  'Use a Cucco or the Boomerang for the two river Heart Pieces on the pillar and the waterfall platform.',
+  'Zora’s Domain Heart Piece: light all five torches in one run (see the Heart Pieces tab).'
+];
+WALK.r14 = [
+  'Find the diving game in Zora’s Domain and dive for all five rupees within the time limit.',
+  'Reward: Silver Scale, which you need for Ruto’s Letter.'
+];
+WALK.r15 = [
+  'Dive in Lake Hylia with the Silver Scale and pick up the bottle holding Ruto’s Letter.',
+  'Show the letter to King Zora in Zora’s Domain. The bottle is now empty.',
+  'Catch a fish in the Zora’s Domain shallows with the empty bottle, or buy one. Take it through the passage King Zora uncovers to Zora’s Fountain.'
+];
+WALK.r16 = [
+  'Bomb the cracked wall near the fountain’s edge and play Zelda’s Lullaby on the Triforce mark.',
+  'Reward: Farore’s Wind.'
+];
+WALK.r17 = [
+  'Feed the fish to Lord Jabu-Jabu and you are swallowed. Talk to Ruto twice to pick her up.',
+  'Shoot the ceiling switch at the start with the Slingshot to open the door. Ruto falls through a hole early on, so jump down after her.',
+  'Carry Ruto when a switch needs her weight, and throw her across large gaps. You cannot use items while carrying her, so set her down first.',
+  'The room past the floor switch holds Stingers. Beat them with the Slingshot (use Z-targeting) and open the chest for the Boomerang.',
+  'Use the Boomerang on the tentacles and on the Shabom in the Compass room. The map chest appears after the tentacles fall.',
+  'Beat the blue tentacle in the second room from the right and the green tentacle in the central room, then drop into the hole behind them with Ruto.',
+  'Hit Big Octo with the Boomerang to make it spin, then strike its back. Ride the pedestal up, cross the platforms, and move the crate onto the east switch. Hit the ceiling switch with the Boomerang to open the boss room.',
+  'Boss: Barinade. Cut the ceiling tentacles with the Boomerang, stun the main body to freeze its jellyfish, then destroy the jellyfish. Hit the body while it is exposed. When it burrows and shocks, just strafe.',
+  'Reward: Heart Container, Zora’s Sapphire.'
+];
+WALK.r18 = [
+  'The Boomerang reaches a lot of Skulltulas and Heart Pieces that were out of range. Sweep Kakariko, Zora’s River, Lake Hylia and the Deku Tree’s fourth token.',
+  'Tip: Check the Gold Skulltulas tab for child tokens you can now collect.'
+];
+WALK.r19 = [
+  'With all three Spiritual Stones, head to the Market. The story takes you to the castle drawbridge, where Zelda hands you the Ocarina of Time and teaches the Song of Time.',
+  'Follow the on-screen prompts to retrieve the Ocarina before you go on.'
+];
+WALK.r20 = [
+  'Go to the Temple of Time. Place the three stones on the altar and play the Song of Time to open the Door of Time.',
+  'Pull the Master Sword from the pedestal. Rauru explains you are asleep for seven years and you wake as an adult.',
+  'Tip: The Pedestal of Time sends you back to childhood any time you return the sword.'
+];
+WALK.r21 = [
+  'Sheik appears in the Temple of Time and teaches the first warp song. The other warp songs follow after each temple.',
+  'Visit the Kakariko Windmill and learn the Song of Storms from the Windmill Man. You can play it as a child too.',
+  'Tip: Play the Song of Storms near bean patches and certain trees to reveal grottos. The Stone of Agony rumbles when one is nearby.'
+];
+WALK.r22 = [
+  'In the Graveyard, speak to Dampé as an adult and follow his ghost through the crypt to the chest at the end.',
+  'Reward: Hookshot. You can race Dampé’s ghost again later for the one-minute Heart Piece.',
+  'Tip: Hookshot onto Granny’s roof now for the rooftop Heart Piece.'
+];
+WALK.r23 = [
+  'Talk to Ingo at Lon Lon Ranch and race him around the corral. Win the race and Epona is yours.',
+  'After winning, jump the fence to leave. Epona is not required for the story but is needed for the Big Poes and horseback archery.'
+];
+WALK.r24 = [
+  'As a child, find Bonooru the musician by Lake Hylia and play an eight-note song for him. He remembers it.',
+  'As an adult, play the same song to him again. He becomes the scarecrow you can summon at high Hookshot targets.',
+  'Tip: Pick a pattern with variety so it does not get mistaken for a normal song.'
+];
+WALK.r25 = [
+  'Reach the Sacred Forest Meadow through the Lost Woods and enter the temple. The temple is split into Poe sister rooms with a twisted corridor in the middle.',
+  'Small Keys: climb the right-hand vines in the entry room for one; beat the two Stalfos in the north room for another; hit the balcony switch to drain the well and take the chest at the bottom; beat the Floor Master in the back-right room for another.',
+  'Beth, Joelle and Amy fall to the same trick: block their charge with your shield twice, then strike when they appear. Amy’s room needs a timed block puzzle, and Meg is the Poe that spins once.',
+  'Shoot the eye above the door to switch the twisted corridor. Melt the frozen eye in the back room with a Fire Arrow or Din’s Fire. Use the far-right switch to escape the falling ceiling.',
+  'Fairy Bow: in the lowest room, beat the three Stalfos and open the chest that appears.',
+  'Boss Key: take the chest in the back of the twisted corridor and drop into the pit behind it.',
+  'Rotate the central block counterclockwise to hit each switch and open the boss door. Hit the third switch in the south room first.',
+  'Boss: Phantom Ganon. Shoot the real one (brighter, with hoofbeats) when it leaves a painting. In phase two, reflect his energy balls with your sword and strike while he is down. Guard instead of swinging when he is close.',
+  'Reward: Heart Container, Forest Medallion.'
+];
+WALK.r26 = [
+  'Pull the Master Sword to become a child again, then play the Song of Storms at the windmill to drain the well. Drop into the well.',
+  'Crawl through the passage, walk through the fake wall at the dead end, and play Zelda’s Lullaby on the north crest to drain the dungeon water.',
+  'Return to the entrance and go through the newly exposed hole. Follow the path and defeat Dead Hand (let its hands grab you, then attack its head).',
+  'Open the chest that appears for the Lens of Truth.',
+  'Tip: The three well Skulltulas are in locked inner rooms. Use the Boomerang and the Lens, and collect all of them before leaving.'
+];
+WALK.r27 = [
+  'The Market Treasure Chest Shop is open at night only. Pay 10 rupees per attempt.',
+  'In each room, use the Lens of Truth to see inside the chests and choose the one with the Small Key.',
+  'Reward after the final room: a Piece of Heart.'
+];
+WALK.r28 = [
+  'As an adult, climb to Death Mountain Crater (see the Fire Temple entry below). Sheik teaches you the Bolero of Fire there, which warps you straight back.',
+  'As a child, warp to Death Mountain Crater and plant a bean in the soft soil beside the Triforce pedestal. Return as an adult to ride it to the peak.',
+  'Tip: Child Link cannot use the Goron Tunic here, so be quick.'
+];
+WALK.r29 = [
+  'Get the Goron Tunic by stopping the rolling Goron in Goron City. Push the statue in Darunia’s room to reach the crater. Hookshot across the broken bridge to the entrance.',
+  'The Fire Temple is built around Goron prisoners. Free them from cages, bombable rooms and hammer switches. Several drop Small Keys.',
+  'Dungeon Map: shoot the eye above the locked door with your Bow. Compass: in a small room in the northeast, past the boulders and fire.',
+  'Megaton Hammer: reach the fake west door (bomb it), beat the Flare Dancer, then climb the timed platforms to the chest.',
+  'Use the Song of Time to open the route to the lower puzzle area, then smash face blocks with the Hammer.',
+  'Boss Key: beat a second Flare Dancer, hit the rusted switch with the Hammer, and open the cage.',
+  'Knock down the last face block with the Hammer so it becomes a stepping stone to the boss.',
+  'Boss: Volvagia. Dodge her flames, then hit her head with the Hammer when she pops up. At low health she feints which hole to use. Use the Bow when she flies.',
+  'Reward: Heart Container, Fire Medallion.'
+];
+WALK.r30 = [
+  'In the crater, use the Hammer on the boulders to uncover the Great Fairy and play Zelda’s Lullaby.',
+  'Reward: Double Magic.'
+];
+WALK.r31 = [
+  'Cross the ice floes at Zora’s Fountain. Skip the floe nearest shore.',
+  'Beat the four Freezards in the first big room. Din’s Fire from the center makes it easy. This raises the ice bars.',
+  'Spinning blade room: collect five Silver Rupees to open the next door. The rotating blade cannot reach the snowy edges.',
+  'Climb the right ledge to the Blue Fire, empty any full bottle, and scoop some. Use it to melt red ice around the map chest.',
+  'Refill the Blue Fire and melt the red ice on the blade room’s east side for the Compass. Melt the west side to continue.',
+  'Ice block room: push the blocks to collect five Silver Rupees. One is frozen in red ice. A brazier in the southwest corner refills your bottles.',
+  'Bring at least two bottles of Blue Fire and melt the red ice in the corridor beyond. A White Wolfos waits. Wait for it to miss, then strike.',
+  'Reward: Iron Boots and the Serenade of Water. Drop through the hole behind the chest with the boots on, open the underwater door, and take the boots off in the Freezard room.',
+  'Tip: Save a bottle of Blue Fire for King Zora.'
+];
+WALK.r32 = [
+  'Melt the red ice around King Zora with Blue Fire and talk to him. He gives you the Zora Tunic.',
+  'You can also buy the tunic in the Zora’s Domain shop.'
+];
+WALK.r33 = [
+  'At the Lake Hylia pond, pay to fish as an adult and land a fish of 13 pounds or more.',
+  'Show it to the owner for the Golden Scale. Use it in the Lakeside Laboratory for the pool-bottom Heart Piece.'
+];
+WALK.r34 = [
+  'Warp with the Serenade of Water, then dive from the north shore wearing the Iron Boots and Zora Tunic. Hookshot the crystal above the gate.',
+  'Water level changes happen at Triforce or crest marks: play Zelda’s Lullaby to lower or raise the water. The first drops it to the lowest level, the second raises it to mid, and later ones open the upper routes.',
+  'Small Keys: one in the Shell Blade room (hit the Shell Blade only when its mouth is open), others in the underwater current room (swap the Iron Boots on and off to control your depth), behind a cracked wall (bomb it), and in the south corridor (push a block).',
+  'Compass first, then continue toward the Longshot. Go through the dragon statue room, use its switches, and defeat Dark Link at the door before the Longshot chest.',
+  'Dark Link: he mirrors your sword moves but not items. Bait a dodge and strike, or use a normal slash then the Hammer. Din’s Fire works because he cannot block it.',
+  'Boss Key: with the Longshot, play the Song of Time behind the central chest to open the floor. Avoid the whirlpools, shoot the eye switch with the Bow, grab the chest with the Longshot, and finish the east corridor and boulder room.',
+  'Boss: Morpha. Hookshot her core out of the water, then slash it. Corner the core at the edge so it cannot retreat. Keep clear of the tentacles.',
+  'Reward: Heart Container, Water Medallion.'
+];
+WALK.r35 = [
+  'Return to Lake Hylia once it has refilled. Stand on the small island in the lake and face the morning sun.',
+  'Aim the Fairy Bow at the sun and shoot it. The Fire Arrows are awarded.'
+];
+WALK.r36 = [
+  'After the Water Temple, go to Kakariko. The village is under attack and Sheik teaches you the Nocturne of Shadow.',
+  'Warp to the Graveyard with the new song.'
+];
+WALK.r37 = [
+  'Take the stairs behind the warp point. Stand on the circle and light every torch with Din’s Fire to open the entrance.',
+  'Bring the Lens of Truth. Almost every room in the temple depends on it.'
+];
+WALK.r38 = [
+  'Longshot across the first pit and walk through the fake wall. Use the Lens on the skull plate on the left to open a hidden corridor.',
+  'Follow the right wall through the two taunting rooms. Stun the ReDead with the Sun’s Song in the map room and open the chest for the Dungeon Map.',
+  'Hover Boots: use the Lens to find the Dead Hand, let its hands grab you, then hit its head. Open the chest it guards.',
+  'Use the Lens to find the one real skull among the fake torches, then push the bird statue’s beak toward it. Cross with the Hover Boots.',
+  'Compass: in the Beamos corridor take the right path, stun the two Gibdos with the Sun’s Song, and open the chest.',
+  'Collect five Silver Rupees in the scythe shortcut room for a Small Key. Bomb the remaining fake wall for a locked door and a second key route.',
+  'Guillotine cavern: go slowly and Longshot the ceiling Skulltulas. Use the Lens to reveal the invisible platforms and the invisible scythe room.',
+  'Falling-spike room: use the Lens to find a block, push it under the spikes to the floor mark, and use the Hookshot on the chest for a Small Key. Fan room: wear the Iron Boots to resist the wind and use the Hover Boots to cross.',
+  'Boat: move the block under the ladder, climb up, and play Zelda’s Lullaby on the crest. Jump to the left platform when the boat arrives, beat the invisible Floor Master, and take the Small Key. Burn the spikes in the north room with Din’s Fire for the Boss Key.',
+  'Final route: return to the boat, shoot the bomb flower to the south with an arrow so the blast topples a statue you can cross. Use the Small Key on the right door, then the Lens and Hover Boots to reach the boss door.',
+  'Boss: Bongo Bongo. Use the Lens and the Bow to stun one hand, then the other, which exposes the eye. Shoot the eye when it charges and slash. Wear the Hover Boots while the hands slam, then take them off before you close in.',
+  'Reward: Heart Container, Shadow Medallion.'
+];
+WALK.r39 = [
+  'Run Dampé’s one-minute race in the Graveyard and finish the rooftop checks around Kakariko.',
+  'Tip: Check the Heart Pieces tab for the Kakariko items now available to you.'
+];
+WALK.r40 = [
+  'Gerudo Valley’s bridge is broken. Epona or the Longshot can get you across. The carpenters fix it once they are free.',
+  'Tip: Start the Biggoron trade now only if you have claimed the Deku Nut upgrade (see the Side Quests tab).'
+];
+WALK.r41 = [
+  'Each of the four carpenters is held in a cell. Defeat the Gerudo thief guarding a cell to get a Small Key, then open it.',
+  'Stay out of the guards’ sight and use the Longshot or Hookshot to get around. Freeing all four earns the Gerudo Membership Card.',
+  'Tip: The Skulltulas on the fortress walls are easier once no guards chase you.'
+];
+WALK.r42 = [
+  'Take Epona to the horseback archery range behind the fortress and shoot the targets as you ride.',
+  'Score 1,000 for a Heart Piece. Score 1,500 for the biggest quiver.'
+];
+WALK.r43 = [
+  'Cross the Haunted Wasteland by following the red flags. Use the Lens of Truth to see the ghost guide.',
+  'At Desert Colossus, Sheik teaches the Requiem of Spirit.',
+  'Tip: Plant a bean here as a child on your next visit.'
+];
+WALK.r44 = [
+  'Warp to the Colossus with the Requiem of Spirit and enter the temple as a child. Talk to Nabooru and agree to fetch the Silver Gauntlets.',
+  'Clear enemies to open doors. Use the Boomerang on the switch behind the fence to lower a bridge and on flying enemies.',
+  'In the Anubis room, use Din’s Fire. Equip the Hylian Shield, since the Deku Shield burns.',
+  'Collect five Silver Rupees in each puzzle room, light torches with a Deku Stick, and use a Bombchu from the chest to crack a wall.',
+  'Push a statue off its ledge to hit a switch that opens the upper floor. Destroy Beamos with bombs first.',
+  'Mini-boss: Iron Knuckle. Sidestep or backstep its axe swings and attack during its recovery. Break the pillars for hearts.',
+  'Reward: Silver Gauntlets. Plant the Colossus bean before you leave.'
+];
+WALK.r45 = [
+  'Return as an adult with the Prelude of Light, then warp in with the Requiem of Spirit.',
+  'Compass: push the big block, hit the ceiling switch with the Longshot (bomb the Beamos first), beat the Wolfos, play Zelda’s Lullaby on the crest, and Longshot to the chest.',
+  'Mirror Shield: go through the right door and collect five Silver Rupees (the Hover Boots reach the floating ones). Take the Small Key from the center chest and watch for the Like Like.',
+  'Use the mirror puzzle to light the correct sun. Avoid the rightmost sun because it spawns enemies. Use the Lens to find an invisible Floor Master and avoid the trap chest.',
+  'On the idol’s left hand, Hover Boots to the crest and play Zelda’s Lullaby, then Longshot to the right hand’s chest for another Small Key.',
+  'In the next room, beat the Anubis and Beamos, lure an Armos onto the floor switch and run for the door. Beat the second Iron Knuckle for the Mirror Shield.',
+  'Boss: Twinrova. In phase one, aim the Mirror Shield by hand (turn off Z-targeting) and bounce one sister’s attack into the other. In phase two, absorb the same element three times with the shield, reflect it to stun her, and slash.',
+  'Reward: Heart Container, Spirit Medallion.'
+];
+WALK.r46 = [
+  'Do the Deku Nut upgrade first: show the Mask of Truth to the scrub at the Lost Woods Forest Stage.',
+  'Run the trade in order using the Side Quests tab. The Odd Mushroom, Odd Potion, Eyeball Frog, Eye Drops and Claim Check steps have timers. Ride Epona between stops.',
+  'Biggoron makes you wait three in-game days after the Claim Check. Sun’s Song speeds that up.'
+];
+WALK.r47 = [
+  'Pay 10 rupees at the entrance. You need the Bow, Hammer, Longshot, Lens of Truth, Hover Boots, Iron Boots, Zora Tunic and Silver Gauntlets.',
+  'The route loops. Start left: shoot the eye above the door for two chests, then beat the sand-room Stalfos for Key 1.',
+  'Timed Silver Rupee room: grab five in about 90 seconds, using the Longshot on the ceiling targets. Wolfos room: beat the Wolfos, use the Lens to find a hidden switch, and push the Silver Block into the hole with the Gauntlets.',
+  'Like Like room: beat three Like Likes and use the Lens in the sandy hole for Key 2. Eye statue room: play the Scarecrow’s Song near the barred door and Longshot to the chest for Key 3.',
+  'Flaming enemy room: smash the statues with the Hammer, hit the hidden switch in the northeast, and take Key 5 before the fire returns. Lava room: Hover Boots and the Song of Time reach the high key.',
+  'Water room: Song of Time clears the time blocks. Wear the Iron Boots and Zora Tunic for five rupees, and take the boots off for the roof rupee. Dinalfos room: bomb the Beamos and beat both Dinalfos for the next key.',
+  'Back at the entrance, play the Song of Storms in the center to summon a fairy, then enter the locked central room. In the Room of Locks, use the Lens to find the climbable hole for the last key.',
+  'Reward: Ice Arrows from the chest in the central prize room.'
+];
+WALK.r48 = [
+  'Medallions come from the six dungeons: Forest, Fire, Water, Shadow, Spirit, and the Light Medallion from Rauru after Sheik reveals herself.',
+  'When all six are in hand, Sheik reveals she is Zelda and gives you the Light Arrows. Ganondorf taunts you from his castle.'
+];
+WALK.r49 = [
+  'Get the Golden Gauntlets from the Shadow barrier first (see the next step), then come back outside and lift the slab east of the castle.',
+  'Play Zelda’s Lullaby for the Great Fairy of Courage. Reward: Double Defense.'
+];
+WALK.r50 = [
+  'Enter the castle across the Bridge of Light and go straight through the first door to avoid the Beamos.',
+  'Shadow: use a Fire Arrow on the brazier to make a timed platform, hit the switch to reveal a chest with the Golden Gauntlets, use the Lens to find a hidden path, hit the second switch with the Hammer, and Light Arrow the orb. Do this first, since the Fire and Light barriers need the Gauntlets.',
+  'Fire: wear the Goron Tunic and collect five Silver Rupees, using the Hover Boots for the center platform. Lift the back pillar and Longshot to the far door. Light Arrow the orb.',
+  'Light: lift the west pillar, beat the invisible enemies with the Lens, take the keys, and play Zelda’s Lullaby on the crest. Collect five rupees in one minute while dodging boulders and run past the Floormaster. Light Arrow the orb.',
+  'Spirit: collect five Silver Rupees while avoiding blades, bomb the Beamos, send a Bombchu through the bars to the switch, burn the cobweb with a Fire Arrow, and use the Mirror Shield to light the correct sun.',
+  'Forest: beat the Wolfos, light the five braziers (Din’s Fire for four, a Fire Arrow for the one above the door), and collect five rupees while the fans pause. The Song of Time makes a block for the high rupee.',
+  'Water: beat two Freezards, bottle Blue Fire, and melt the red ice. In the ice block room you have two minutes to push the blocks, melt the ice, and hit the rusted switch with the Hammer.',
+  'The central tower opens with all six barriers down. Climb, beat the Dinolfos, Stalfos and Iron Knuckles (hit one Iron Knuckle at a time) and take the Boss Key.'
+];
+WALK.r51 = [
+  'Save before the final door, since there is no post-credits save. Open the right door and climb the long staircase. Save the pots for the fight.',
+  'Boss: Ganondorf. Stand on the corner platforms. Reflect his energy balls with your sword (aim manually) until he staggers, then hit him with a Light Arrow and Longshot in to slash. Use the red corner walls to move. If you run low, retreat downstairs to recover.',
+  'Tip: Biggoron’s Sword hits harder if you have it, and the Spin Attack works as a backup to reflect volleys.'
+];
+WALK.r52 = [
+  'Follow Zelda out of the collapsing tower within three minutes. Beat the Stalfos on the way.',
+  'Boss: Ganon. You cannot use the Master Sword at first. Use Biggoron’s Sword, the Hammer or ranged attacks on his tail, his only weak point. Stun him with a Light Arrow to the face, then get behind him. Rubble drops restock supplies.',
+  'After he collapses, take the Master Sword from Zelda’s side and finish him with it.'
+];
+(function () {
+  const KEY = 'heros-ledger-v1', TABKEY = 'heros-ledger-tab';
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const GEM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L19 9 L12 22 L5 9 Z"/></svg>';
+  const HEART = '<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.3-9.1C1 8.5 3 5 6.5 5c2 0 3.5 1.1 5.5 3 2-1.9 3.5-3 5.5-3C21 5 23 8.5 21.3 11.9 19 16.4 12 21 12 21z"/></svg>';
+  const TAGS = { child: 'Child', adult: 'Adult', night: 'Night', hc: 'Heart Container' };
+  const HC_IDS = new Set(), HP_IDS = new Set(), SK_IDS = new Set();
+  let total = 0;
+  SECTIONS.forEach(s => s.groups.forEach(g => g.items.forEach(it => {
+    total++;
+    if (it[3].split(' ').includes('hc')) HC_IDS.add(it[0]);
+    if (s.id === 'hearts') HP_IDS.add(it[0]);
+    if (s.id === 'skulls') SK_IDS.add(it[0]);
+  })));
+
+  let st = { c: {}, u: 0 };
+  try { const r = JSON.parse(localStorage.getItem(KEY) || 'null'); if (r && r.c) st = { c: r.c, u: r.u || 0 }; } catch (e) {}
+  const saveLocal = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+
+  /* ---------- markup ---------- */
+  function rowHtml(it) {
+    const tags = it[3].split(' ').filter(Boolean).map(t => `<span class="tag ${t === 'hc' ? 'heart' : t}">${TAGS[t]}</span>`).join('');
+    const row = `<label class="row"><input type="checkbox" data-id="${it[0]}"><span class="gem">${GEM}</span><span class="txt"><b>${esc(it[1])}</b>${tags}<span class="d">${esc(it[2])}</span></span></label>`;
+    const w = typeof WALK !== 'undefined' && WALK[it[0]];
+    const how = w ? `<details class="how"><summary>Walkthrough</summary><ol>${w.map(stepHtml).join('')}</ol></details>` : '';
+    return `<div class="item">${row}${how}</div>`;
+  }
+  function stepHtml(s) {
+    const m = /^(Boss|Mini-boss|Tip|Watch out|Reward): /.exec(s);
+    if (!m) return `<li>${esc(s)}</li>`;
+    const cls = m[1] === 'Boss' || m[1] === 'Mini-boss' ? ' class="boss"' : '';
+    return `<li><b${cls}>${m[1]}</b>${esc(s.slice(m[0].length))}</li>`;
+  }
+  function groupHtml(g, open) {
+    return `<details class="group"${open ? ' open' : ''}><summary><h3>${esc(g.title)}</h3><span class="gcount"></span></summary>${g.note ? `<p class="gnote">${esc(g.note)}</p>` : ''}<div class="rows">${g.items.map(rowHtml).join('')}</div></details>`;
+  }
+  const NOTES = [
+    ['N64 Deku Nut bug.', 'Claim the Deku Nut capacity upgrade (Mask of Truth at the Lost Woods Forest Stage) before you accept the Poacher’s Saw. After that it can be locked out for good on the original cartridge.'],
+    ['Hearts add up to 20.', '3 starting, 8 boss containers (Deku Tree through Spirit Temple), and 9 from the 36 Heart Pieces. Ganondorf and Ganon give no container.'],
+    ['Night Skulltulas.', 'Outdoor tokens marked Night only appear after dark. Play the Sun’s Song to jump ahead, and set night before entering areas where time stands still.'],
+    ['Child and adult swaps are free.', 'The Pedestal of Time sends you back to childhood any time, so nothing in the child era is lost for good apart from the nut upgrade above.'],
+    ['The trade quest has timers.', 'Warping does not extend them. Ride Epona between steps and keep a bottle free.'],
+    ['Magic Beans get pricier.', 'Buy all ten early, then plant them as you pass each soft-soil patch.']
+  ];
+  function overviewHtml() {
+    const cards = SECTIONS.map(s => `<button class="card" data-go="${s.id}"><h3>${esc(s.name)}</h3><div class="bar"><i data-sbar="${s.id}"></i></div><div class="n" data-scount="${s.id}"></div></button>`).join('');
+    return `<div class="next" id="next"></div><div class="cards">${cards}</div><ul class="notes">${NOTES.map(n => `<li><b>${esc(n[0])}</b> ${esc(n[1])}</li>`).join('')}</ul>
+      <div class="foot"><div>Built from public completion guides: <a href="https://www.zeldadungeon.net/wiki/Ocarina_of_Time_Heart_Pieces" target="_blank" rel="noopener">Zelda Dungeon</a>, <a href="https://finalboss.io/the-legend-of-zelda-ocarina-of-time-how-to-get-all-100-gold-skulltulas-n64" target="_blank" rel="noopener">FinalBoss</a> and <a href="https://consolepulse.com/nintendo/zelda/guides/zelda-ocarina-of-time-complete-guide-100-percent" target="_blank" rel="noopener">Console Pulse</a>. Locations are short hints, so open a full guide when one stumps you.</div>
+      <button class="danger" id="reset" type="button">Reset all progress</button></div>`;
+  }
+
+  /* ---------- build ---------- */
+  $('tabs').innerHTML = [['overview', 'Overview']].concat(SECTIONS.map(s => [s.id, s.name])).map(([id, name]) =>
+    `<button class="tab" role="tab" id="tab-${id}" data-tab="${id}" aria-controls="panel-${id}" aria-selected="false">${esc(name)}<small data-tcount="${id}"></small></button>`).join('');
+  $('main').innerHTML = `<section class="panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" hidden>${overviewHtml()}</section>` +
+    SECTIONS.map(s => `<section class="panel" id="panel-${s.id}" role="tabpanel" aria-labelledby="tab-${s.id}" hidden>
+      <p class="lead">${esc(s.intro)}</p>
+      <div class="toolbar"><button class="chip" type="button" data-hide="${s.id}" aria-pressed="false">Hide checked</button><button class="chip" type="button" data-fold="open">Expand all</button><button class="chip" type="button" data-fold="close">Collapse all</button>${s.id === 'route' ? '<button class="chip" type="button" data-how="open">Open all walkthroughs</button><button class="chip" type="button" data-how="close">Close walkthroughs</button>' : ''}</div>
+      ${s.groups.map((g, i) => groupHtml(g, s.id !== 'skulls' || i < 3)).join('')}</section>`).join('');
+  $('hearts').innerHTML = Array(20).fill(HEART).join('');
+
+  /* ---------- refresh ---------- */
+  function refresh() {
+    let done = 0, hc = 0, hp = 0, sk = 0;
+    document.querySelectorAll('input[data-id]').forEach(i => {
+      const id = i.dataset.id, on = !!st.c[id];
+      i.checked = on; i.closest('.item').classList.toggle('is-done', on);
+      if (on) { done++; if (HC_IDS.has(id)) hc++; if (HP_IDS.has(id)) hp++; if (SK_IDS.has(id)) sk++; }
+    });
+    const pct = Math.round(done / total * 100);
+    $('overallFill').style.width = pct + '%'; $('overallPct').textContent = pct + '%';
+    $('overallBar').setAttribute('aria-valuenow', pct);
+    $('doneNum').textContent = done; $('totalNum').textContent = total;
+    const hearts = 3 + hc + Math.floor(hp / 4);
+    $('heartNum').textContent = hearts; $('skullNum').textContent = sk;
+    document.querySelectorAll('#hearts svg').forEach((s, i) => s.classList.toggle('on', i < hearts));
+    SECTIONS.forEach(s => {
+      const p = $('panel-' + s.id), rows = p.querySelectorAll('input[data-id]'), d = p.querySelectorAll('input[data-id]:checked').length;
+      document.querySelector(`[data-tcount="${s.id}"]`).textContent = `${d}/${rows.length}`;
+      document.querySelector(`[data-scount="${s.id}"]`).textContent = `${d} of ${rows.length} checked`;
+      document.querySelector(`[data-sbar="${s.id}"]`).style.width = (rows.length ? d / rows.length * 100 : 0) + '%';
+      p.querySelectorAll('.group').forEach(g => {
+        const r = g.querySelectorAll('input[data-id]'), c = g.querySelectorAll('input[data-id]:checked').length;
+        g.querySelector('.gcount').textContent = `${c}/${r.length}`; g.classList.toggle('done', c === r.length);
+      });
+    });
+    let nx = null;
+    outer: for (const g of SECTIONS[0].groups) for (const it of g.items) if (!st.c[it[0]]) { nx = { g, it }; break outer; }
+    $('next').innerHTML = nx
+      ? `<h2>Next on the route</h2><p><b>${esc(nx.it[1])}</b> <span class="gcount">${esc(nx.g.title)}</span></p><p class="gnote" style="padding:2px 0 0">${esc(nx.it[2])}</p>`
+      : `<h2>Route complete</h2><p>Every story step is checked. Finish the other tabs for the full 100%.</p>`;
+  }
+
+  /* ---------- tabs and controls ---------- */
+  function showTab(id) {
+    document.querySelectorAll('.panel').forEach(p => { p.hidden = p.id !== 'panel-' + id; });
+    document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === id ? 'true' : 'false'));
+    const t = $('tab-' + id); if (t && t.scrollIntoView) t.scrollIntoView({ block: 'nearest', inline: 'center' });
+    try { localStorage.setItem(TABKEY, id); } catch (e) {}
+  }
+  let armed = null;
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-tab],[data-go],[data-hide],[data-fold],[data-how],#reset'); if (!t) return;
+    if (t.dataset.how) {
+      t.closest('.panel').querySelectorAll('.how').forEach(d => { d.open = t.dataset.how === 'open'; });
+    } else if (t.dataset.tab) showTab(t.dataset.tab);
+    else if (t.dataset.go) { showTab(t.dataset.go); window.scrollTo(0, 0); }
+    else if (t.dataset.hide) {
+      const p = $('panel-' + t.dataset.hide), on = t.getAttribute('aria-pressed') !== 'true';
+      t.setAttribute('aria-pressed', on); p.classList.toggle('hide-done', on);
+    } else if (t.dataset.fold) {
+      t.closest('.panel').querySelectorAll('.group').forEach(g => { g.open = t.dataset.fold === 'open'; });
+    } else if (t.id === 'reset') {
+      if (!armed) {
+        t.textContent = 'Tap again to erase everything'; t.classList.add('armed');
+        armed = setTimeout(() => { armed = null; t.textContent = 'Reset all progress'; t.classList.remove('armed'); }, 4000);
+      } else {
+        clearTimeout(armed); armed = null; t.textContent = 'Reset all progress'; t.classList.remove('armed');
+        st = { c: {}, u: Date.now() }; saveLocal(); refresh(); schedulePush();
+      }
+    }
+  });
+  $('main').addEventListener('change', e => {
+    const id = e.target.dataset && e.target.dataset.id; if (!id) return;
+    if (e.target.checked) st.c[id] = 1; else delete st.c[id];
+    st.u = Date.now(); saveLocal(); refresh(); schedulePush();
+  });
+
+  /* ---------- account sync (db) with local fallback ---------- */
+  let dbDoc = null, writing = false, dirty = false, timer = null;
+  const setSync = t => { $('sync').textContent = t; };
+  async function pushRemote() {
+    if (!dbDoc) return;
+    if (writing) { dirty = true; return; }
+    writing = true;
+    try {
+      do { dirty = false; await dbDoc.set({ u: st.u, c: Object.keys(st.c).join(',') }); } while (dirty);
+      setSync('Synced to your account');
+    } catch (e) { setSync('Saved on this device only'); }
+    writing = false;
+  }
+  function schedulePush() { if (!dbDoc) return; clearTimeout(timer); timer = setTimeout(pushRemote, 600); }
+  function applyRemote(d) {
+    const c = {}; String(d.c || '').split(',').filter(Boolean).forEach(k => { c[k] = 1; });
+    st = { c, u: d.u || 0 }; saveLocal(); refresh(); setSync('Synced to your account');
+  }
+  async function initDb() {
+    try {
+      if (!window.claude || !window.claude.use) return;
+      const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+      if (!db || !user) return;
+      const id = await user.id(); if (!id) return;
+      dbDoc = db.doc('data/users/' + id + '/ledger');
+      dbDoc.onSnapshot(snap => {
+        const d = snap.exists ? snap.data() : null, ru = d ? (d.u || 0) : -1;
+        if (ru > st.u) applyRemote(d);
+        else if (st.u > ru && Object.keys(st.c).length) schedulePush();
+        else setSync('Synced to your account');
+      }, () => setSync('Saved on this device only'));
+    } catch (e) {}
+  }
+
+  /* ---------- countdown ---------- */
+  (function () {
+    const days = Math.ceil((new Date(2026, 10, 5) - new Date()) / 864e5), el = $('countdown');
+    if (days > 1) el.textContent = `${days} days to the Nov 5 remake`;
+    else if (days === 1) el.textContent = '1 day to the Nov 5 remake';
+    else if (days === 0) el.textContent = 'Remake launches today';
+  })();
+
+  let first = 'overview';
+  try { const t = localStorage.getItem(TABKEY); if (t && ($('panel-' + t))) first = t; } catch (e) {}
+  refresh(); showTab(first); initDb();
+})();
+</script>
+</body>
+</html>
