@@ -52,20 +52,3 @@ It covers the original N64 quest. Master Quest and the 3DS version have differen
 ## Disclaimer
 
 This is an unofficial fan project and is not affiliated with or endorsed by Nintendo. *The Legend of Zelda* and *Ocarina of Time* are trademarks of Nintendo.
-
-## Push to GitHub
-
-```sh
-cd heros-ledger
-git init -b main
-git add .
-git commit -m "Add Hero's Ledger"
-git remote add origin git@github.com:<your-username>/<repo-name>.git
-git push -u origin main
-```
-
-With the GitHub CLI you can create the repo and push in one step:
-
-```sh
-gh repo create heros-ledger --public --source=. --push
-```
